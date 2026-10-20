@@ -6,11 +6,14 @@
 <title>My To-Do List</title>
 
 <style>
+* { box-sizing: border-box; }
+
 body {
   font-family: Arial, sans-serif;
   background: #eef2ff;
   padding: 20px;
 }
+
 .container {
   max-width: 450px;
   margin: 40px auto;
@@ -18,16 +21,21 @@ body {
   padding: 25px;
   border-radius: 15px;
 }
+
 h1 { text-align: center; }
+
 .input-box {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 10px;
 }
+
 input {
   padding: 12px;
-  flex: 1;
+  width: 100%;
   min-width: 0;
 }
+
 button {
   padding: 12px;
   border: none;
@@ -36,6 +44,9 @@ button {
   color: white;
   cursor: pointer;
 }
+
+ul { padding: 0; }
+
 li {
   display: flex;
   align-items: center;
@@ -43,33 +54,49 @@ li {
   padding: 12px 0;
   border-bottom: 1px solid #ddd;
 }
+
+li input { width: auto; }
+
 li span {
   flex: 1;
   overflow-wrap: anywhere;
 }
+
 .done {
   text-decoration: line-through;
   color: gray;
 }
+
 .delete { background: #ef4444; }
 </style>
 </head>
 
 <body>
+
 <div class="container">
+
 <h1>My To-Do List ✓</h1>
 <p>Make room for what matters.</p>
 
 <div class="input-box">
+
 <input id="task" placeholder="Add a task">
-<button onclick="addTask()">+</button>
+
+<input type="date" id="taskDate">
+
+<input type="time" id="taskTime">
+
+<button onclick="addTask()">+ Add Task</button>
+
 </div>
 
 <h3>Today's Tasks</h3>
 <ul id="list"></ul>
+
 </div>
 
 <script>
+
 let tasks = JSON.parse(
   localStorage.getItem("tasks") || "[]"
 );
@@ -79,15 +106,18 @@ function save() {
 }
 
 function showTasks() {
+
   let list = document.getElementById("list");
   list.innerHTML = "";
 
   tasks.forEach((task, index) => {
+
     let li = document.createElement("li");
 
     let check = document.createElement("input");
     check.type = "checkbox";
     check.checked = task.done;
+
     check.onchange = () => {
       tasks[index].done = check.checked;
       save();
@@ -95,12 +125,22 @@ function showTasks() {
     };
 
     let span = document.createElement("span");
+
     span.textContent = task.text;
+
+    if (task.date || task.time) {
+      span.textContent += " | " +
+        (task.date || "") + " " +
+        (task.time || "");
+    }
+
     if (task.done) span.className = "done";
 
     let del = document.createElement("button");
+
     del.textContent = "Delete";
     del.className = "delete";
+
     del.onclick = () => {
       tasks.splice(index, 1);
       save();
@@ -109,22 +149,38 @@ function showTasks() {
 
     li.append(check, span, del);
     list.appendChild(li);
+
   });
 }
 
 function addTask() {
+
   let input = document.getElementById("task");
   let text = input.value.trim();
 
   if (!text) return;
 
-  tasks.push({text: text, done: false});
+  let date = document.getElementById("taskDate").value;
+  let time = document.getElementById("taskTime").value;
+
+  tasks.push({
+    text: text,
+    date: date,
+    time: time,
+    done: false
+  });
+
   input.value = "";
+  document.getElementById("taskDate").value = "";
+  document.getElementById("taskTime").value = "";
+
   save();
   showTasks();
 }
 
 showTasks();
+
 </script>
+
 </body>
 </html>
