@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My To-Do List</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #eef2ff;
+  padding: 20px;
+}
+.container {
+  max-width: 450px;
+  margin: 40px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+}
+h1 { text-align: center; }
+.input-box {
+  display: flex;
+  gap: 8px;
+}
+input {
+  padding: 12px;
+  flex: 1;
+  min-width: 0;
+}
+button {
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: #4f46e5;
+  color: white;
+  cursor: pointer;
+}
+li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid #ddd;
+}
+li span {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.done {
+  text-decoration: line-through;
+  color: gray;
+}
+.delete { background: #ef4444; }
+</style>
+</head>
+
+<body>
+<div class="container">
+<h1>My To-Do List ✓</h1>
+<p>Make room for what matters.</p>
+
+<div class="input-box">
+<input id="task" placeholder="Add a task">
+<button onclick="addTask()">+</button>
+</div>
+
+<h3>Today's Tasks</h3>
+<ul id="list"></ul>
+</div>
+
+<script>
+let tasks = JSON.parse(
+  localStorage.getItem("tasks") || "[]"
+);
+
+function save() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function showTasks() {
+  let list = document.getElementById("list");
+  list.innerHTML = "";
+
+  tasks.forEach((task, index) => {
+    let li = document.createElement("li");
+
+    let check = document.createElement("input");
+    check.type = "checkbox";
+    check.checked = task.done;
+    check.onchange = () => {
+      tasks[index].done = check.checked;
+      save();
+      showTasks();
+    };
+
+    let span = document.createElement("span");
+    span.textContent = task.text;
+    if (task.done) span.className = "done";
+
+    let del = document.createElement("button");
+    del.textContent = "Delete";
+    del.className = "delete";
+    del.onclick = () => {
+      tasks.splice(index, 1);
+      save();
+      showTasks();
+    };
+
+    li.append(check, span, del);
+    list.appendChild(li);
+  });
+}
+
+function addTask() {
+  let input = document.getElementById("task");
+  let text = input.value.trim();
+
+  if (!text) return;
+
+  tasks.push({text: text, done: false});
+  input.value = "";
+  save();
+  showTasks();
+}
+
+showTasks();
+</script>
+</body>
+</html>
