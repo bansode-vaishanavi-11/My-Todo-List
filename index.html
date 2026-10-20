@@ -183,7 +183,15 @@ function addTask() {
 showTasks();
 
 </script>
-
+<script>
+function showFeature(feature) {
+  if (feature === "tasks") {
+    document.getElementById("taskSection").scrollIntoView({
+      behavior: "smooth"
+    });
+  }
+}
+</script>
 </body>
 </html>
 <div class="dashboard">
