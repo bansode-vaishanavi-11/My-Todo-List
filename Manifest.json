@@ -1,0 +1,12 @@
+
+  "name": "Smart Student Planner",
+  "short_name": "Student Planner",
+  "description": "Student task planner with reminders and alarms",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f5ff",
+  "theme_color": "#7952c7",
+  "lang": "en",
+  "icons": []
+}
