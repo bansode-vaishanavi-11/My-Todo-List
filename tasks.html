@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Tasks - Smart Student Planner</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f7f5ff;
+ color:#30284b;
+}
+header{
+ background:linear-gradient(135deg,#7952c7,#a58be5);
+ color:white;
+ padding:23px;
+ text-align:center;
+ border-radius:0 0 25px 25px;
+}
+header h1{margin:8px}
+.container{max-width:700px;margin:auto;padding:18px}
+.card{
+ background:white;
+ padding:18px;
+ border-radius:16px;
+ margin-bottom:17px;
+ box-shadow:0 3px 12px #e5e0ef;
+}
+input,select{
+ width:100%;
+ padding:12px;
+ margin:7px 0 13px;
+ border:1px solid #ddd;
+ border-radius:9px;
+ font-size:15px;
+}
+label{font-weight:bold;font-size:14px}
+button,.back{
+ display:inline-block;
+ background:#7952c7;
+ color:white;
+ border:0;
+ border-radius:9px;
+ padding:11px 15px;
+ cursor:pointer;
+ text-decoration:none;
+}
+.full{width:100%;font-weight:bold}
+.task{
+ background:#f7f5ff;
+ padding:14px;
+ border-radius:12px;
+ margin:12px 0;
+ overflow-wrap:anywhere;
+}
+.task.done{opacity:.65}
+.task.done .taskName{text-decoration:line-through}
+.taskName{font-size:17px;font-weight:bold}
+.small{font-size:13px;color:#666;margin:8px 0}
+.actions{display:flex;flex-wrap:wrap;gap:7px}
+.actions button{padding:9px;font-size:13px}
+.red{background:#d65369}
+.green{background:#27865d}
+.orange{background:#c77831}
+#alarmPopup{
+ display:none;
+ position:fixed;
+ inset:0;
+ background:#211733b8;
+ z-index:100;
+ align-items:center;
+ justify-content:center;
+ padding:18px;
+}
+.popup{
+ width:100%;
+ max-width:390px;
+ background:white;
+ padding:25px;
+ border-radius:22px;
+ text-align:center;
+ box-shadow:0 8px 30px #2225;
+}
+.bell{font-size:55px}
+.popup button{margin:5px}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div style="font-size:39px">✅</div>
+ <h1 id="pageTitle">My Tasks</h1>
+ <p>Plan • Complete • Achieve</p>
+ <a class="back" href="index.html">← Dashboard</a>
+ <button onclick="switchLanguage()" id="langButton">
+ मराठी
+ </button>
+</header>
+
+<main class="container">
+
+<section class="card">
+ <h3 id="helpTitle">📖 How to Use</h3>
+ <p id="helpText">
+ Enter task name, select date and time,
+ choose priority, enable alarm and save.
+ </p>
+</section>
+
+<section class="card">
+ <h2 id="formTitle">➕ Add New Task</h2>
+
+ <form id="taskForm">
+
+ <label id="nameLabel" for="taskName">Task Name</label>
+ <input id="taskName" required maxlength="120"
+ placeholder="Enter your task">
+
+ <label id="dateLabel" for="taskDate">Date</label>
+ <input type="date" id="taskDate" required>
+
+ <label id="timeLabel" for="taskTime">Time</label>
+ <input type="time" id="taskTime" required>
+
+ <label id="priorityLabel" for="priority">Priority</label>
+ <select id="priority">
+  <option value="High">High</option>
+  <option value="Medium" selected>Medium</option>
+  <option value="Low">Low</option>
+ </select>
+
+ <label>
+  <input type="checkbox" id="enableAlarm"
+   checked style="width:auto">
+  <span id="alarmLabel">Enable Alarm 🔔</span>
+ </label>
+
+ <p class="small" id="alarmHelp">
+ Alarm works while this page is open.
+ </p>
+
+ <button class="full" type="submit" id="saveButton">
+ Save Task
+ </button>
+
+ <button type="button" class="full orange"
+ onclick="cancelEdit()" id="cancelButton"
+ style="display:none;margin-top:9px">
+ Cancel Edit
+ </button>
+
+ </form>
+</section>
+
+<section class="card">
+ <h2 id="listTitle">📋 My Task List</h2>
+ <div id="taskList"></div>
+</section>
+
+</main>
+
+<div id="alarmPopup" role="alertdialog"
+ aria-modal="true" aria-labelledby="alarmHeading">
+ <div class="popup">
+  <div class="bell">🔔</div>
+  <h2 id="alarmHeading">TASK ALARM!</h2>
+  <h3 id="alarmTaskName"></h3>
+  <p id="alarmTime"></p>
+
+  <button onclick="snoozeAlarm()" id="snoozeButton">
+   Snooze 5 Minutes
+  </button>
+
+  <button class="red" onclick="dismissAlarm()"
+   id="dismissButton">
+   Dismiss
+  </button>
+ </div>
+</div>
+
+<script>
+const STORAGE_KEY="tasks";
+let tasks=[];
+let editingIndex=null;
+let activeAlarm=null;
+let alarmQueue=[];
+let audioContext=null;
+
+let language=localStorage.getItem("plannerLanguage")||"en";
+
+function loadTasks(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+  tasks=Array.isArray(saved)?saved:[];
+ }catch(e){
+  tasks=[];
+  alert("Saved tasks could not be loaded. Please check your backup.");
+ }
+}
+
+function saveTasks(){
+ localStorage.setItem(STORAGE_KEY,JSON.stringify(tasks));
+}
+
+function localDate(){
+ const d=new Date();
+ return d.getFullYear()+"-"+
+ String(d.getMonth()+1).padStart(2,"0")+"-"+
+ String(d.getDate()).padStart(2,"0");
+}
+
+document.getElementById("taskDate").value=localDate();
+
+document.getElementById("taskForm").addEventListener("submit",function(e){
+ e.preventDefault();
+
+ const name=document.getElementById("taskName").value.trim();
+ const date=document.getElementById("taskDate").value;
+ const time=document.getElementById("taskTime").value;
+ const priority=document.getElementById("priority").value;
+ const alarm=document.getElementById("enableAlarm").checked;
+
+ if(!name||!date||!time)return;
+
+ const previous=editingIndex===null?null:tasks[editingIndex];
+
+ const task={
+  ...(previous||{}),
+  text:name,
+  date:date,
+  time:time,
+  priority:priority,
+  alarm:alarm,
+  done:previous?!!previous.done:false,
+  notified:false,
+  snoozeUntil:null
+ };
+
+ if(editingIndex===null){
+  tasks.push(task);
+ }else{
+  tasks[editingIndex]=task;
+ }
+
+ saveTasks();
+ cancelEdit();
+ renderTasks();
+ checkAlarms();
+});
+
+function makeButton(text,cls,callback){
+ const b=document.createElement("button");
+ b.textContent=text;
+ if(cls)b.className=cls;
+ b.addEventListener("click",callback);
+ return b;
+}
+
+function renderTasks(){
+ const list=document.getElementById("taskList");
+ list.replaceChildren();
+
+ if(tasks.length===0){
+  const p=document.createElement("p");
+  p.textContent=language==="mr"?
+  "अजून कोणतेही काम नाही.":"No tasks added yet.";
+  list.appendChild(p);
+  return;
+ }
+
+ tasks.forEach((t,i)=>{
+  const item=document.createElement("div");
+  item.className="task"+(t.done?" done":"");
+
+  const name=document.createElement("div");
+  name.className="taskName";
+  name.textContent=t.text||"Untitled Task";
+
+  const info=document.createElement("div");
+  info.className="small";
+  info.textContent=
+   (t.date||"No date")+" • "+(t.time||"No time")+
+   " • "+(t.priority||"Medium")+
+   " • "+(t.done?"Completed":(t.alarm?"🔔 Alarm ON":"Alarm OFF"));
+
+  const actions=document.createElement("div");
+  actions.className="actions";
+
+  actions.appendChild(makeButton(
+   t.done?"↩️ Undo":"✓ Complete",
+   "green",
+   ()=>{
+    t.done=!t.done;
+    if(t.done){
+     t.snoozeUntil=null;
+     t.notified=true;
+     if(activeAlarm===t)dismissAlarm();
+    }
+    saveTasks();
+    renderTasks();
+   }
+  ));
+
+  actions.appendChild(makeButton("✏️ Edit","",()=>{
+   editingIndex=i;
+   document.getElementById("taskName").value=t.text||"";
+   document.getElementById("taskDate").value=t.date||localDate();
+   document.getElementById("taskTime").value=t.time||"";
+   document.getElementById("priority").value=t.priority||"Medium";
+   document.getElementById("enableAlarm").checked=!!t.alarm;
+   document.getElementById("formTitle").textContent="✏️ Edit Task";
+   document.getElementById("saveButton").textContent="Update Task";
+   document.getElementById("cancelButton").style.display="block";
+   window.scrollTo({top:0,behavior:"smooth"});
+  }));
+
+  actions.appendChild(makeButton("🗑️ Delete","red",()=>{
+   if(confirm("Delete this task?")){
+    if(activeAlarm===t)dismissAlarm();
+    tasks.splice(i,1);
+    saveTasks();
+    renderTasks();
+   }
+  }));
+
+  item.append(name,info,actions);
+  list.appendChild(item);
+ });
+}
+
+function cancelEdit(){
+ editingIndex=null;
+ document.getElementById("taskForm").reset();
+ document.getElementById("taskDate").value=localDate();
+ document.getElementById("priority").value="Medium";
+ document.getElementById("enableAlarm").checked=true;
+ document.getElementById("formTitle").textContent="➕ Add New Task";
+ document.getElementById("saveButton").textContent="Save Task";
+ document.getElementById("cancelButton").style.display="none";
+}
+
+function playAlarmSound(){
+ try{
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx)return;
+  if(!audioContext)audioContext=new AudioCtx();
+  audioContext.resume();
+
+  const now=audioContext.currentTime;
+
+  for(let i=0;i<3;i++){
+   const osc=audioContext.createOscillator();
+   const gain=audioContext.createGain();
+   osc.type="sine";
+   osc.frequency.value=850;
+   gain.gain.value=0.12;
+   osc.connect(gain);
+   gain.connect(audioContext.destination);
+   osc.start(now+i*0.45);
+   osc.stop(now+i*0.45+0.25);
+  }
+ }catch(e){}
+}
+
+function checkAlarms(){
+ const now=Date.now();
+
+ for(const t of tasks){
+  if(!t.alarm||t.done||!t.date||!t.time)continue;
+
+  const due=new Date(t.date+"T"+t.time).getTime();
+  const target=t.snoozeUntil||due;
+
+  if(!Number.isFinite(target))continue;
+
+  // Do not trigger old missed alarms from previous days.
+  if(!t.snoozeUntil && now-due>60000)continue;
+
+  if(now>=target && !t.notified && !alarmQueue.includes(t)
+     && activeAlarm!==t){
+   alarmQueue.push(t);
+  }
+ }
+
+ if(!activeAlarm && alarmQueue.length){
+  showNextAlarm();
+ }
+}
+
+function showNextAlarm(){
+ if(activeAlarm||!alarmQueue.length)return;
+
+ activeAlarm=alarmQueue.shift();
+
+ if(!tasks.includes(activeAlarm)||
+ activeAlarm.done||!activeAlarm.alarm){
+  activeAlarm=null;
+  showNextAlarm();
+  return;
+ }
+
+ document.getElementById("alarmTaskName").textContent=
+ activeAlarm.text||"Task Reminder";
+
+ document.getElementById("alarmTime").textContent=
+ (activeAlarm.date||"")+" • "+(activeAlarm.time||"");
+
+ document.getElementById("alarmPopup").style.display="flex";
+ playAlarmSound();
+}
+
+function closeAlarm(){
+ document.getElementById("alarmPopup").style.display="none";
+ activeAlarm=null;
+ saveTasks();
+ renderTasks();
+ showNextAlarm();
+}
+
+function snoozeAlarm(){
+ if(!activeAlarm)return;
+ activeAlarm.snoozeUntil=Date.now()+5*60*1000;
+ activeAlarm.notified=false;
+ closeAlarm();
+}
+
+function dismissAlarm(){
+ if(!activeAlarm)return;
+ activeAlarm.notified=true;
+ activeAlarm.snoozeUntil=null;
+ closeAlarm();
+}
+
+function switchLanguage(){
+ language=language==="en"?"mr":"en";
+ localStorage.setItem("plannerLanguage",language);
+ updateLanguage();
+}
+
+function updateLanguage(){
+ const mr=language==="mr";
+ document.documentElement.lang=language;
+
+ const translations={
+  pageTitle:["My Tasks","माझी कामे"],
+  langButton:["मराठी","English"],
+  helpTitle:["📖 How to Use","📖 कसे वापरावे"],
+  helpText:[
+   "Enter task name, select date and time, choose priority, enable alarm and save.",
+   "कामाचे नाव, तारीख, वेळ आणि प्राधान्य निवडा. Alarm सुरू करून Save करा."
+  ],
+  nameLabel:["Task Name","कामाचे नाव"],
+  dateLabel:["Date","तारीख"],
+  timeLabel:["Time","वेळ"],
+  priorityLabel:["Priority","प्राधान्य"],
+  alarmLabel:["Enable Alarm 🔔","अलार्म सुरू करा 🔔"],
+  alarmHelp:[
+   "Alarm works while this page is open.",
+   "हे Page उघडे असताना Alarm काम करेल."
+  ],
+  listTitle:["📋 My Task List","📋 माझ्या कामांची यादी"],
+  alarmHeading:["TASK ALARM!","कामाचा अलार्म!"],
+  snoozeButton:["Snooze 5 Minutes","5 मिनिटांनी पुन्हा"],
+  dismissButton:["Dismiss","बंद करा"]
+ };
+
+ for(const id in translations){
+  document.getElementById(id).textContent=
+   translations[id][mr?1:0];
+ }
+
+ renderTasks();
+}
+
+loadTasks();
+updateLanguage();
+
+// Check every second while this page is running.
+setInterval(checkAlarms,1000);
+checkAlarms();
+</script>
+
+</body>
+</html>
