@@ -1,3 +1,8 @@
+<button onclick="enableNotifications()">
+  🔔 Enable Notifications
+</button>
+
+<script>
 async function enableNotifications() {
 
   if (!("serviceWorker" in navigator) ||
@@ -19,14 +24,12 @@ async function enableNotifications() {
     const registration =
       await navigator.serviceWorker.ready;
 
-    alert("Notifications Enabled! 🔔");
+    console.log("Service Worker Ready:", registration);
 
-    console.log(
-      "Service Worker Ready:",
-      registration
-    );
+    alert("Notifications Enabled! 🔔");
 
   } catch (error) {
     alert("Error: " + error.message);
   }
 }
+</script>
