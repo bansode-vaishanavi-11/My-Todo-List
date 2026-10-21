@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My To-Do List</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f5ff;
+  margin: 0;
+  padding: 15px;
+  color: #26334a;
+}
+
+.container {
+  max-width: 850px;
+  margin: auto;
+}
+
+header {
+  text-align: center;
+  padding: 20px;
+}
+
+h1 {
+  color: #5264cf;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.dashboard button {
+  background: white;
+  color: #3645a5;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px 8px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.dashboard button:hover {
+  background: #e2e6ff;
+}
+
+section {
+  display: none;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 12px #ddd;
+}
+
+section.active {
+  display: block;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  margin: 7px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font: inherit;
+}
+
+textarea {
+  min-height: 90px;
+}
+
+.action {
+  background: #5969d8;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  margin: 8px 0;
+  cursor: pointer;
+}
+
+li {
+  background: #f4f5ff;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+li button {
+  margin-left: 10px;
+  padding: 6px;
+}
+
+li input[type="checkbox"] {
+  width: auto;
+  margin-right: 10px;
+}
+
+.done {
+  text-decoration: line-through;
+  opacity: .6;
+}
+
+small {
+  display: block;
+  margin-top: 5px;
+  color: #666;
+}
+
+@media(max-width: 400px) {
+  .dashboard {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+  <h1>My To-Do List ✓</h1>
+  <p>Make room for what matters.</p>
+</header>
+
+<h2>My Dashboard</h2>
+
+<div class="dashboard">
+
+<button onclick="showFeature('tasks')">
+📝 My Tasks
+</button>
+
+<button onclick="showFeature('timetable')">
+📅 Daily Timetable
+</button>
+
+<button onclick="showFeature('notes')">
+📒 My Notes
+</button>
+
+<button onclick="showFeature('goals')">
+🎯 My Goals
+</button>
+
+<button onclick="showFeature('reminder')">
+🔔 Reminder
+</button>
+
+<button onclick="showFeature('study')">
+📚 Study Planner
+</button>
+
+<button onclick="showFeature('habits')">
+✅ Habit Tracker
+</button>
+
+</div>
+
+<!-- MY TASKS -->
+
+<section id="tasks" class="active">
+
+<h2>📝 My Tasks</h2>
+
+<input id="taskInput" placeholder="Enter your task">
+
+<label>Select Date:</label>
+<input type="date" id="taskDate">
+
+<label>Select Time:</label>
+<input type="time" id="taskTime">
+
+<button class="action" onclick="addTask()">
++ Add Task
+</button>
+
+<h3>Today's Tasks</h3>
+<ul id="taskList"></ul>
+
+</section>
+
+<!-- DAILY TIMETABLE -->
+
+<section id="timetable">
+
+<h2>📅 Daily Timetable</h2>
+
+<input id="activity" placeholder="Enter Activity">
+
+<label>Start Time</label>
+<input type="time" id="startTime">
+
+<label>End Time</label>
+<input type="time" id="endTime">
+
+<button class="action" onclick="addTimetable()">
++ Add Activity
+</button>
+
+<h3>My Schedule</h3>
+<ul id="timetableList"></ul>
+
+</section>
+
+<!-- NOTES -->
+
+<section id="notes">
+
+<h2>📒 My Notes</h2>
+
+<input id="noteTitle" placeholder="Note Title">
+
+<textarea id="noteText" placeholder="Write your notes"></textarea>
+
+<button class="action" onclick="addNote()">
+Save Note
+</button>
+
+<ul id="notesList"></ul>
+
+</section>
+
+<!-- GOALS -->
+
+<section id="goals">
+
+<h2>🎯 My Goals</h2>
+
+<input id="goalInput" placeholder="Enter your Goal">
+
+<button class="action" onclick="addGoal()">
++ Add Goal
+</button>
+
+<ul id="goalsList"></ul>
+
+</section>
+
+<!-- REMINDER -->
+
+<section id="reminder">
+
+<h2>🔔 Reminder</h2>
+
+<input id="reminderInput" placeholder="Reminder Title">
+
+<label>Reminder Date</label>
+<input type="date" id="reminderDate">
+
+<label>Reminder Time</label>
+<input type="time" id="reminderTime">
+
+<button class="action" onclick="addReminder()">
++ Set Reminder
+</button>
+
+<p id="reminderAlert" role="status"></p>
+
+<ul id="reminderList"></ul>
+
+<small>Reminder alerts work while this App is open. They are not background phone notifications.</small>
+
+</section>
+
+<!-- STUDY PLANNER -->
+
+<section id="study">
+
+<h2>📚 Study Planner</h2>
+
+<input id="subjectInput" placeholder="Subject Name">
+
+<input id="topicInput" placeholder="Study Topic">
+
+<label>Study Date</label>
+<input type="date" id="studyDate">
+
+<button class="action" onclick="addStudy()">
++ Add Study Plan
+</button>
+
+<ul id="studyList"></ul>
+
+</section>
+
+<!-- HABIT TRACKER -->
+
+<section id="habits">
+
+<h2>✅ Habit Tracker</h2>
+
+<input id="habitInput" placeholder="Enter Daily Habit">
+
+<button class="action" onclick="addHabit()">
++ Add Habit
+</button>
+
+<h3>My Daily Habits</h3>
+
+<ul id="habitList"></ul>
+
+</section>
+
+</div>
+
+<script>
+
+// DATA STORAGE
+
+function load(key) {
+  try {
+    const data = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(data) ? data : [];
+  } catch(e) {
+    return [];
+  }
+}
+
+function save(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+let tasks = load("tasks");
+let timetable = load("timetable");
+let notes = load("notes");
+let goals = load("goals");
+let reminders = load("reminders");
+let study = load("study");
+let habits = load("habits");
+
+// DASHBOARD NAVIGATION
+
+function showFeature(id) {
+  document.querySelectorAll("section").forEach(s => {
+    s.classList.remove("active");
+  });
+
+  document.getElementById(id).classList.add("active");
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+// COMMON LIST FUNCTIONS
+
+function makeText(parent, value) {
+  const span = document.createElement("span");
+  span.textContent = value;
+  parent.appendChild(span);
+  return span;
+}
+
+function makeButton(parent, title, action) {
+  const btn = document.createElement("button");
+  btn.textContent = title;
+  btn.onclick = action;
+  parent.appendChild(btn);
+}
+
+function render(key, data, listId, format, checkable=false) {
+  const list = document.getElementById(listId);
+  list.innerHTML = "";
+
+  data.forEach((item, index) => {
+    const li = document.createElement("li");
+
+    if(checkable) {
+      const check = document.createElement("input");
+      check.type = "checkbox";
+      check.checked = !!item.done;
+
+      check.onchange = () => {
+        item.done = check.checked;
+        save(key, data);
+        renderAll();
+      };
+
+      li.appendChild(check);
+    }
+
+    const span = makeText(li, format(item));
+
+    if(item.done) {
+      span.classList.add("done");
+    }
+
+    makeButton(li, "Delete", () => {
+      data.splice(index, 1);
+      save(key, data);
+      renderAll();
+    });
+
+    list.appendChild(li);
+  });
+}
+
+function value(id) {
+  return document.getElementById(id).value.trim();
+}
+
+function clearFields(...ids) {
+  ids.forEach(id => {
+    document.getElementById(id).value = "";
+  });
+}
+
+// ADD TASK
+
+function addTask() {
+  const text = value("taskInput");
+  if(!text) return alert("Enter Task");
+
+  tasks.push({
+    text: text,
+    date: value("taskDate"),
+    time: value("taskTime"),
+    done: false
+  });
+
+  save("tasks", tasks);
+  clearFields("taskInput", "taskDate", "taskTime");
+  renderAll();
+}
+
+// ADD TIMETABLE
+
+function addTimetable() {
+  const activity = value("activity");
+  const start = value("startTime");
+  const end = value("endTime");
+
+  if(!activity || !start || !end) {
+    return alert("Fill all fields");
+  }
+
+  if(end <= start) {
+    return alert("End Time must be after Start Time");
+  }
+
+  timetable.push({activity, start, end});
+
+  timetable.sort((a,b) => a.start.localeCompare(b.start));
+
+  save("timetable", timetable);
+  clearFields("activity", "startTime", "endTime");
+  renderAll();
+}
+
+// ADD NOTES
+
+function addNote() {
+  const title = value("noteTitle");
+  const text = value("noteText");
+
+  if(!title || !text) return alert("Enter Note");
+
+  notes.push({title, text});
+
+  save("notes", notes);
+  clearFields("noteTitle", "noteText");
+  renderAll();
+}
+
+// ADD GOALS
+
+function addGoal() {
+  const text = value("goalInput");
+  if(!text) return alert("Enter Goal");
+
+  goals.push({text, done:false});
+
+  save("goals", goals);
+  clearFields("goalInput");
+  renderAll();
+}
+
+// ADD REMINDER
+
+function addReminder() {
+  const text = value("reminderInput");
+  const date = value("reminderDate");
+  const time = value("reminderTime");
+
+  if(!text || !date || !time) {
+    return alert("Fill all fields");
+  }
+
+  const when = new Date(date + "T" + time);
+
+  if(when.getTime() <= Date.now()) {
+    return alert("Choose a future Date and Time");
+  }
+
+  reminders.push({
+    text, date, time,
+    alerted:false
+  });
+
+  save("reminders", reminders);
+
+  clearFields(
+    "reminderInput",
+    "reminderDate",
+    "reminderTime"
+  );
+
+  renderAll();
+}
+
+// REMINDER CHECK
+
+function checkReminders() {
+  let changed = false;
+
+  reminders.forEach(r => {
+    const due = new Date(r.date + "T" + r.time);
+
+    if(!r.alerted && due.getTime() <= Date.now()) {
+      r.alerted = true;
+      changed = true;
+
+      document.getElementById("reminderAlert").textContent =
+        "🔔 Reminder: " + r.text;
+
+      alert("🔔 Reminder: " + r.text);
+    }
+  });
+
+  if(changed) {
+    save("reminders", reminders);
+    renderAll();
+  }
+}
+
+setInterval(checkReminders, 15000);
+
+// ADD STUDY PLAN
+
+function addStudy() {
+  const subject = value("subjectInput");
+  const topic = value("topicInput");
+  const date = value("studyDate");
+
+  if(!subject || !topic || !date) {
+    return alert("Fill all fields");
+  }
+
+  study.push({
+    subject, topic, date,
+    done:false
+  });
+
+  save("study", study);
+
+  clearFields(
+    "subjectInput",
+    "topicInput",
+    "studyDate"
+  );
+
+  renderAll();
+}
+
+// HABIT TRACKER
+
+function localDate() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return year + "-" + month + "-" + day;
+}
+
+function addHabit() {
+  const text = value("habitInput");
+  if(!text) return alert("Enter Habit");
+
+  habits.push({
+    text,
+    completedDates: []
+  });
+
+  save("habits", habits);
+  clearFields("habitInput");
+  renderAll();
+}
+
+function renderHabits() {
+  const list = document.getElementById("habitList");
+  list.innerHTML = "";
+
+  const today = localDate();
+
+  habits.forEach((habit, index) => {
+    const li = document.createElement("li");
+
+    if(!Array.isArray(habit.completedDates)) {
+      habit.completedDates = [];
+    }
+
+    const check = document.createElement("input");
+    check.type = "checkbox";
+
+    check.checked = habit.completedDates.includes(today);
+
+    check.onchange = () => {
+      if(check.checked) {
+        if(!habit.completedDates.includes(today)) {
+          habit.completedDates.push(today);
+        }
+      } else {
+        habit.completedDates =
+          habit.completedDates.filter(d => d !== today);
+      }
+
+      save("habits", habits);
+      renderAll();
+    };
+
+    li.appendChild(check);
+    makeText(li, habit.text + " (Today)");
+
+    makeButton(li, "Delete", () => {
+      habits.splice(index, 1);
+      save("habits", habits);
+      renderAll();
+    });
+
+    list.appendChild(li);
+  });
+}
+
+// DISPLAY ALL SAVED DATA
+
+function renderAll() {
+
+  render("tasks", tasks, "taskList",
+    x => x.text + " | " +
+    (x.date || "") + " " + (x.time || ""),
+    true
+  );
+
+  render("timetable", timetable, "timetableList",
+    x => x.start + " - " + x.end + " | " + x.activity
+  );
+
+  render("notes", notes, "notesList",
+    x => x.title + " : " + x.text
+  );
+
+  render("goals", goals, "goalsList",
+    x => x.text,
+    true
+  );
+
+  render("reminders", reminders, "reminderList",
+    x => x.text + " | " + x.date + " " + x.time +
+    (x.alerted ? " (Alerted)" : "")
+  );
+
+  render("study", study, "studyList",
+    x => x.subject + " | " + x.topic + " | " + x.date,
+    true
+  );
+
+  renderHabits();
+}
+
+renderAll();
+checkReminders();
+
+</script>
+
+</body>
+</html>
