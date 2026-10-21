@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#7952c7">
+<title>Smart Student Planner</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f7f5ff;
+ color:#30284b;
+}
+header{
+ background:linear-gradient(135deg,#7952c7,#a58be5);
+ color:white;
+ padding:28px 18px;
+ border-radius:0 0 26px 26px;
+ text-align:center;
+}
+header h1{font-size:25px;margin:8px 0}
+header p{margin:5px}
+.container{max-width:850px;margin:auto;padding:18px}
+.profile{
+ background:white;
+ border-radius:18px;
+ padding:17px;
+ box-shadow:0 3px 12px #ddd8ef;
+}
+button{
+ background:#7952c7;
+ color:white;
+ border:0;
+ border-radius:9px;
+ padding:10px 15px;
+ cursor:pointer;
+}
+.profile button{margin-top:10px}
+h2{font-size:20px;margin-top:26px}
+.overview,.features{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px;
+}
+.summary,.feature{
+ border-radius:17px;
+ padding:18px 10px;
+ text-align:center;
+}
+.summary strong{
+ display:block;
+ font-size:27px;
+ margin:8px;
+}
+.feature{
+ text-decoration:none;
+ color:#30284b;
+ min-height:115px;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:12px;
+ box-shadow:0 3px 9px #e8e3f2;
+ font-weight:bold;
+}
+.emoji{font-size:34px}
+.blue{background:#e4ebff}
+.green{background:#dff5e7}
+.pink{background:#ffe4ed}
+.orange{background:#fff0dc}
+.purple{background:#eee2ff}
+.yellow{background:#fff5d5}
+.teal{background:#d9f6f1}
+.sky{background:#e0f2ff}
+.rose{background:#fce4f4}
+.grey{background:#e8eaf7}
+footer{text-align:center;color:#777;padding:25px;font-size:12px}
+@media(min-width:650px){
+ .features{grid-template-columns:repeat(3,1fr)}
+ .overview{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div style="font-size:40px">🎓</div>
+ <h1>Smart Student Planner</h1>
+ <p>Plan • Study • Achieve</p>
+ <button onclick="changeLanguage()" id="languageButton">
+  मराठी
+ </button>
+</header>
+
+<main class="container">
+
+<section class="profile">
+ <h2 id="welcome">Welcome, Student! 👋</h2>
+ <p id="welcomeText">Let's make today productive.</p>
+ <button onclick="editName()" id="editButton">
+  ✏️ Edit Name
+ </button>
+</section>
+
+<h2 id="overviewTitle">Today's Overview</h2>
+
+<section class="overview">
+ <div class="summary blue">
+  📝
+  <strong id="taskCount">0</strong>
+  <span id="taskLabel">Today's Tasks</span>
+ </div>
+
+ <div class="summary pink">
+  📋
+  <strong id="assignmentCount">0</strong>
+  <span id="assignmentLabel">Pending Assignments</span>
+ </div>
+
+ <div class="summary orange">
+  📅
+  <strong id="examCount">0</strong>
+  <span id="examLabel">Upcoming Exams</span>
+ </div>
+
+ <div class="summary green">
+  📊
+  <strong id="attendanceCount">—</strong>
+  <span id="attendanceLabel">Attendance</span>
+ </div>
+</section>
+
+<h2 id="featuresTitle">My Features</h2>
+
+<section class="features">
+
+<a href="tasks.html" class="feature blue">
+ <span class="emoji">✅</span>
+ <span data-en="My Tasks" data-mr="माझी कामे">My Tasks</span>
+</a>
+
+<a href="timetable.html" class="feature teal">
+ <span class="emoji">🗓️</span>
+ <span data-en="Daily Timetable" data-mr="दैनिक वेळापत्रक">Daily Timetable</span>
+</a>
+
+<a href="notes.html" class="feature yellow">
+ <span class="emoji">📒</span>
+ <span data-en="My Notes" data-mr="माझ्या नोट्स">My Notes</span>
+</a>
+
+<a href="study.html" class="feature purple">
+ <span class="emoji">📚</span>
+ <span data-en="Study Planner" data-mr="अभ्यास नियोजन">Study Planner</span>
+</a>
+
+<a href="assignments.html" class="feature pink">
+ <span class="emoji">📋</span>
+ <span data-en="Assignment Tracker" data-mr="असाइनमेंट ट्रॅकर">Assignment Tracker</span>
+</a>
+
+<a href="attendance.html" class="feature green">
+ <span class="emoji">🏫</span>
+ <span data-en="Attendance Tracker" data-mr="उपस्थिती ट्रॅकर">Attendance Tracker</span>
+</a>
+
+<a href="exams.html" class="feature orange">
+ <span class="emoji">⏳</span>
+ <span data-en="Exam Countdown" data-mr="परीक्षा काउंटडाउन">Exam Countdown</span>
+</a>
+
+<a href="focus.html" class="feature sky">
+ <span class="emoji">⏱️</span>
+ <span data-en="Focus Timer" data-mr="फोकस टायमर">Focus Timer</span>
+</a>
+
+<a href="report.html" class="feature rose">
+ <span class="emoji">📈</span>
+ <span data-en="Weekly Progress Report" data-mr="साप्ताहिक प्रगती अहवाल">Weekly Progress Report</span>
+</a>
+
+<a href="backup.html" class="feature grey">
+ <span class="emoji">☁️</span>
+ <span data-en="Backup & Restore" data-mr="बॅकअप आणि रिस्टोर">Backup & Restore</span>
+</a>
+
+</section>
+</main>
+
+<footer>Made for College Students 💜</footer>
+
+<script>
+let language = localStorage.getItem("plannerLanguage") || "en";
+let studentName = localStorage.getItem("plannerStudentName") || "";
+
+function editName(){
+ const name = prompt("Enter Student Name:",studentName);
+ if(name !== null){
+  studentName = name.trim().slice(0,60);
+  localStorage.setItem("plannerStudentName",studentName);
+  updateWelcome();
+ }
+}
+
+function updateWelcome(){
+ const greeting = language === "mr" ? "स्वागत आहे" : "Welcome";
+ document.getElementById("welcome").textContent =
+ greeting + ", " + (studentName || "Student") + "! 👋";
+}
+
+function changeLanguage(){
+ language = language === "en" ? "mr" : "en";
+ localStorage.setItem("plannerLanguage",language);
+ updateLanguage();
+}
+
+function updateLanguage(){
+ const mr = language === "mr";
+
+ document.documentElement.lang = language;
+ document.getElementById("languageButton").textContent =
+ mr ? "English" : "मराठी";
+
+ document.getElementById("welcomeText").textContent =
+ mr ? "आजचा दिवस उत्पादक बनवूया." :
+ "Let's make today productive.";
+
+ document.getElementById("editButton").textContent =
+ mr ? "✏️ नाव बदला" : "✏️ Edit Name";
+
+ const labels = {
+ overviewTitle:["Today's Overview","आजचा आढावा"],
+ featuresTitle:["My Features","माझी वैशिष्ट्ये"],
+ taskLabel:["Today's Tasks","आजची कामे"],
+ assignmentLabel:["Pending Assignments","बाकी असाइनमेंट"],
+ examLabel:["Upcoming Exams","आगामी परीक्षा"],
+ attendanceLabel:["Attendance","उपस्थिती"]
+ };
+
+ for(const id in labels){
+  document.getElementById(id).textContent =
+  labels[id][mr ? 1 : 0];
+ }
+
+ document.querySelectorAll("[data-en]").forEach(el=>{
+  el.textContent = el.dataset[language];
+ });
+
+ updateWelcome();
+}
+
+function readData(key){
+ try{
+  const data = JSON.parse(localStorage.getItem(key) || "[]");
+  return Array.isArray(data) ? data : [];
+ }catch(e){
+  return [];
+ }
+}
+
+function updateOverview(){
+ const today = new Date();
+ const date = today.getFullYear()+"-"+
+ String(today.getMonth()+1).padStart(2,"0")+"-"+
+ String(today.getDate()).padStart(2,"0");
+
+ const tasks = readData("tasks");
+ const todayTasks = tasks.filter(t=>t.date===date && !t.done);
+
+ document.getElementById("taskCount").textContent =
+ todayTasks.length;
+
+ // New feature counts will connect when their pages are built.
+ document.getElementById("assignmentCount").textContent = "—";
+ document.getElementById("examCount").textContent = "—";
+ document.getElementById("attendanceCount").textContent = "—";
+}
+
+updateLanguage();
+updateOverview();
+</script>
+
+</body>
+</html
