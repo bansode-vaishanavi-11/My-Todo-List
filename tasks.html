@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>My Tasks - Smart Student Planner</title>
+<meta name="theme-color" content="#7952c7">
+<title>My Tasks | Smart Student Planner</title>
 
 <style>
 *{box-sizing:border-box}
@@ -16,89 +17,98 @@ body{
 header{
  background:linear-gradient(135deg,#7952c7,#a58be5);
  color:white;
- padding:23px;
+ padding:25px 15px;
  text-align:center;
  border-radius:0 0 25px 25px;
 }
 header h1{margin:8px}
-.container{max-width:700px;margin:auto;padding:18px}
+.container{max-width:720px;margin:auto;padding:16px}
 .card{
  background:white;
+ border-radius:17px;
  padding:18px;
- border-radius:16px;
  margin-bottom:17px;
  box-shadow:0 3px 12px #e5e0ef;
 }
-input,select{
+input:not([type=checkbox]),select{
  width:100%;
  padding:12px;
- margin:7px 0 13px;
- border:1px solid #ddd;
+ margin:7px 0 14px;
+ border:1px solid #ccc;
  border-radius:9px;
- font-size:15px;
+ font-size:16px;
 }
 label{font-weight:bold;font-size:14px}
 button,.back{
  display:inline-block;
+ padding:11px 15px;
  background:#7952c7;
  color:white;
  border:0;
- border-radius:9px;
- padding:11px 15px;
+ border-radius:10px;
  cursor:pointer;
  text-decoration:none;
+ font-size:14px;
 }
-.full{width:100%;font-weight:bold}
+button:disabled{opacity:.55}
+.full{width:100%;margin-top:8px}
+.green{background:#23845c}
+.red{background:#cf4961}
+.orange{background:#bd722b}
+.blue{background:#376bbd}
 .task{
- background:#f7f5ff;
  padding:14px;
+ margin:11px 0;
+ background:#f7f5ff;
  border-radius:12px;
- margin:12px 0;
  overflow-wrap:anywhere;
 }
 .task.done{opacity:.65}
 .task.done .taskName{text-decoration:line-through}
-.taskName{font-size:17px;font-weight:bold}
-.small{font-size:13px;color:#666;margin:8px 0}
-.actions{display:flex;flex-wrap:wrap;gap:7px}
-.actions button{padding:9px;font-size:13px}
-.red{background:#d65369}
-.green{background:#27865d}
-.orange{background:#c77831}
+.taskName{font-weight:bold;font-size:17px}
+.small{color:#666;font-size:13px;line-height:1.5}
+.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.actions button{font-size:13px;padding:9px}
 #alarmPopup{
  display:none;
  position:fixed;
  inset:0;
- background:#211733b8;
- z-index:100;
+ z-index:9999;
+ background:#241b3d;
+ color:white;
+ padding:22px;
  align-items:center;
  justify-content:center;
- padding:18px;
-}
-.popup{
- width:100%;
- max-width:390px;
- background:white;
- padding:25px;
- border-radius:22px;
  text-align:center;
- box-shadow:0 8px 30px #2225;
 }
-.bell{font-size:55px}
-.popup button{margin:5px}
+.alarmContent{width:100%;max-width:420px}
+.alarmBell{font-size:75px;animation:ring 1s infinite}
+@keyframes ring{
+ 0%,100%{transform:rotate(0)}
+ 25%{transform:rotate(15deg)}
+ 75%{transform:rotate(-15deg)}
+}
+.alarmContent h1{font-size:31px}
+.alarmContent h2{overflow-wrap:anywhere}
+.alarmContent button{
+ display:block;
+ width:100%;
+ margin:13px 0;
+ padding:16px;
+ font-size:17px;
+}
+.soundStatus{font-size:13px;color:#666}
 </style>
 </head>
 
 <body>
 
 <header>
- <div style="font-size:39px">✅</div>
+ <div style="font-size:42px">✅</div>
  <h1 id="pageTitle">My Tasks</h1>
  <p>Plan • Complete • Achieve</p>
  <a class="back" href="index.html">← Dashboard</a>
- <button onclick="switchLanguage()" id="langButton">
- मराठी
- </button>
+ <button id="langButton" onclick="switchLanguage()">मराठी</button>
 </header>
 
 <main class="container">
@@ -106,8 +116,14 @@ button,.back{
 <section class="card">
  <h3 id="helpTitle">📖 How to Use</h3>
  <p id="helpText">
- Enter task name, select date and time,
- choose priority, enable alarm and save.
+ Add your task, choose date and time, enable alarm and save.
+ </p>
+
+ <button class="full green" onclick="enableSound()" id="soundButton">
+ 🔊 Enable Alarm Sound
+ </button>
+ <p id="soundStatus" class="soundStatus">
+ Tap this button once to enable and test sound.
  </p>
 </section>
 
@@ -116,42 +132,37 @@ button,.back{
 
  <form id="taskForm">
 
- <label id="nameLabel" for="taskName">Task Name</label>
- <input id="taskName" required maxlength="120"
- placeholder="Enter your task">
+  <label id="nameLabel" for="taskName">Task Name</label>
+  <input id="taskName" required maxlength="120"
+   placeholder="Enter Task Name">
 
- <label id="dateLabel" for="taskDate">Date</label>
- <input type="date" id="taskDate" required>
+  <label id="dateLabel" for="taskDate">Date</label>
+  <input id="taskDate" type="date" required>
 
- <label id="timeLabel" for="taskTime">Time</label>
- <input type="time" id="taskTime" required>
+  <label id="timeLabel" for="taskTime">Time</label>
+  <input id="taskTime" type="time" required>
 
- <label id="priorityLabel" for="priority">Priority</label>
- <select id="priority">
-  <option value="High">High</option>
-  <option value="Medium" selected>Medium</option>
-  <option value="Low">Low</option>
- </select>
+  <label id="priorityLabel" for="priority">Priority</label>
+  <select id="priority">
+   <option value="High">High</option>
+   <option value="Medium" selected>Medium</option>
+   <option value="Low">Low</option>
+  </select>
 
- <label>
-  <input type="checkbox" id="enableAlarm"
-   checked style="width:auto">
-  <span id="alarmLabel">Enable Alarm 🔔</span>
- </label>
+  <label>
+   <input id="enableAlarm" type="checkbox" checked>
+   <span id="alarmLabel">Enable Alarm 🔔</span>
+  </label>
 
- <p class="small" id="alarmHelp">
- Alarm works while this page is open.
- </p>
+  <button type="submit" class="full" id="saveButton">
+   Save Task
+  </button>
 
- <button class="full" type="submit" id="saveButton">
- Save Task
- </button>
-
- <button type="button" class="full orange"
- onclick="cancelEdit()" id="cancelButton"
- style="display:none;margin-top:9px">
- Cancel Edit
- </button>
+  <button type="button" class="full orange"
+   id="cancelButton" style="display:none"
+   onclick="cancelEdit()">
+   Cancel Edit
+  </button>
 
  </form>
 </section>
@@ -163,111 +174,172 @@ button,.back{
 
 </main>
 
+<!-- FULL SCREEN ALARM -->
+
 <div id="alarmPopup" role="alertdialog"
  aria-modal="true" aria-labelledby="alarmHeading">
- <div class="popup">
-  <div class="bell">🔔</div>
-  <h2 id="alarmHeading">TASK ALARM!</h2>
-  <h3 id="alarmTaskName"></h3>
+
+ <div class="alarmContent">
+  <div class="alarmBell">🔔</div>
+
+  <h1 id="alarmHeading">TASK ALARM!</h1>
+  <p>Smart Student Planner</p>
+
+  <hr style="border-color:#68567f">
+
+  <h2 id="alarmTaskName"></h2>
   <p id="alarmTime"></p>
 
-  <button onclick="snoozeAlarm()" id="snoozeButton">
+  <button class="blue" onclick="snoozeAlarm()" id="snoozeButton">
    Snooze 5 Minutes
   </button>
 
-  <button class="red" onclick="dismissAlarm()"
-   id="dismissButton">
-   Dismiss
+  <button class="red" onclick="dismissAlarm()" id="dismissButton">
+   Dismiss Alarm
   </button>
  </div>
 </div>
 
 <script>
-const STORAGE_KEY="tasks";
+"use strict";
+
+const KEY="tasks";
 let tasks=[];
 let editingIndex=null;
 let activeAlarm=null;
 let alarmQueue=[];
 let audioContext=null;
-
+let soundEnabled=false;
+let soundInterval=null;
 let language=localStorage.getItem("plannerLanguage")||"en";
+
+function el(id){
+ return document.getElementById(id);
+}
 
 function loadTasks(){
  try{
-  const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
-  tasks=Array.isArray(saved)?saved:[];
+  const data=JSON.parse(localStorage.getItem(KEY)||"[]");
+  if(!Array.isArray(data))throw Error("Invalid task data");
+  tasks=data;
  }catch(e){
-  tasks=[];
-  alert("Saved tasks could not be loaded. Please check your backup.");
+  alert("Could not read saved tasks. Existing data has not been overwritten.");
+  return false;
  }
+ return true;
 }
 
 function saveTasks(){
- localStorage.setItem(STORAGE_KEY,JSON.stringify(tasks));
+ localStorage.setItem(KEY,JSON.stringify(tasks));
 }
 
-function localDate(){
+function todayDate(){
  const d=new Date();
  return d.getFullYear()+"-"+
  String(d.getMonth()+1).padStart(2,"0")+"-"+
  String(d.getDate()).padStart(2,"0");
 }
 
-document.getElementById("taskDate").value=localDate();
+function playBeep(){
+ if(!audioContext||audioContext.state!=="running")return;
 
-document.getElementById("taskForm").addEventListener("submit",function(e){
- e.preventDefault();
+ try{
+  const start=audioContext.currentTime;
 
- const name=document.getElementById("taskName").value.trim();
- const date=document.getElementById("taskDate").value;
- const time=document.getElementById("taskTime").value;
- const priority=document.getElementById("priority").value;
- const alarm=document.getElementById("enableAlarm").checked;
+  for(let i=0;i<3;i++){
+   const osc=audioContext.createOscillator();
+   const gain=audioContext.createGain();
 
- if(!name||!date||!time)return;
+   osc.type="sine";
+   osc.frequency.value=850;
 
- const previous=editingIndex===null?null:tasks[editingIndex];
+   gain.gain.setValueAtTime(0.0001,start+i*.35);
+   gain.gain.exponentialRampToValueAtTime(
+    0.16,start+i*.35+.02
+   );
+   gain.gain.exponentialRampToValueAtTime(
+    0.0001,start+i*.35+.25
+   );
 
- const task={
-  ...(previous||{}),
-  text:name,
-  date:date,
-  time:time,
-  priority:priority,
-  alarm:alarm,
-  done:previous?!!previous.done:false,
-  notified:false,
-  snoozeUntil:null
- };
+   osc.connect(gain);
+   gain.connect(audioContext.destination);
 
- if(editingIndex===null){
-  tasks.push(task);
- }else{
-  tasks[editingIndex]=task;
+   osc.start(start+i*.35);
+   osc.stop(start+i*.35+.27);
+  }
+ }catch(e){
+  console.log("Sound error",e);
  }
+}
 
- saveTasks();
- cancelEdit();
- renderTasks();
- checkAlarms();
+async function enableSound(){
+ try{
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+
+  if(!AudioCtx){
+   el("soundStatus").textContent="Audio is not supported.";
+   return;
+  }
+
+  if(!audioContext)audioContext=new AudioCtx();
+
+  await audioContext.resume();
+
+  soundEnabled=audioContext.state==="running";
+
+  if(soundEnabled){
+   el("soundStatus").textContent=
+    "✅ Sound enabled. Did you hear the test beep?";
+   playBeep();
+  }else{
+   el("soundStatus").textContent=
+    "Audio is blocked. Tap Enable Alarm Sound again.";
+  }
+ }catch(e){
+  el("soundStatus").textContent=
+   "Could not start sound. Check iPad volume and browser settings.";
+ }
+}
+
+// Try to unlock audio on user interaction.
+document.addEventListener("pointerdown",function(){
+ if(audioContext && audioContext.state==="suspended"){
+  audioContext.resume().catch(()=>{});
+ }
 });
 
-function makeButton(text,cls,callback){
- const b=document.createElement("button");
- b.textContent=text;
- if(cls)b.className=cls;
- b.addEventListener("click",callback);
- return b;
+function stopAlarmSound(){
+ if(soundInterval){
+  clearInterval(soundInterval);
+  soundInterval=null;
+ }
+}
+
+function startAlarmSound(){
+ stopAlarmSound();
+
+ if(!soundEnabled)return;
+
+ if(audioContext && audioContext.state==="suspended"){
+  audioContext.resume().catch(()=>{});
+ }
+
+ playBeep();
+
+ soundInterval=setInterval(()=>{
+  if(activeAlarm)playBeep();
+  else stopAlarmSound();
+ },1800);
 }
 
 function renderTasks(){
- const list=document.getElementById("taskList");
+ const list=el("taskList");
  list.replaceChildren();
 
- if(tasks.length===0){
+ if(!tasks.length){
   const p=document.createElement("p");
   p.textContent=language==="mr"?
-  "अजून कोणतेही काम नाही.":"No tasks added yet.";
+   "अजून कोणतेही काम नाही.":"No tasks added yet.";
   list.appendChild(p);
   return;
  }
@@ -280,51 +352,64 @@ function renderTasks(){
   name.className="taskName";
   name.textContent=t.text||"Untitled Task";
 
-  const info=document.createElement("div");
+  const info=document.createElement("p");
   info.className="small";
   info.textContent=
    (t.date||"No date")+" • "+(t.time||"No time")+
    " • "+(t.priority||"Medium")+
-   " • "+(t.done?"Completed":(t.alarm?"🔔 Alarm ON":"Alarm OFF"));
+   " • "+(t.done?"Completed":t.alarm?"🔔 Alarm ON":"Alarm OFF");
 
   const actions=document.createElement("div");
   actions.className="actions";
 
   actions.appendChild(makeButton(
-   t.done?"↩️ Undo":"✓ Complete",
-   "green",
-   ()=>{
+   t.done?"↩️ Undo":"✓ Complete","green",()=>{
     t.done=!t.done;
+
     if(t.done){
-     t.snoozeUntil=null;
      t.notified=true;
+     t.snoozeUntil=null;
+     alarmQueue=alarmQueue.filter(x=>x!==t);
+
      if(activeAlarm===t)dismissAlarm();
     }
+
     saveTasks();
     renderTasks();
    }
   ));
 
-  actions.appendChild(makeButton("✏️ Edit","",()=>{
+  actions.appendChild(makeButton("✏️ Edit","blue",()=>{
    editingIndex=i;
-   document.getElementById("taskName").value=t.text||"";
-   document.getElementById("taskDate").value=t.date||localDate();
-   document.getElementById("taskTime").value=t.time||"";
-   document.getElementById("priority").value=t.priority||"Medium";
-   document.getElementById("enableAlarm").checked=!!t.alarm;
-   document.getElementById("formTitle").textContent="✏️ Edit Task";
-   document.getElementById("saveButton").textContent="Update Task";
-   document.getElementById("cancelButton").style.display="block";
+
+   el("taskName").value=t.text||"";
+   el("taskDate").value=t.date||todayDate();
+   el("taskTime").value=t.time||"";
+   el("priority").value=t.priority||"Medium";
+   el("enableAlarm").checked=!!t.alarm;
+
+   el("formTitle").textContent="✏️ Edit Task";
+   el("saveButton").textContent="Update Task";
+   el("cancelButton").style.display="block";
+
    window.scrollTo({top:0,behavior:"smooth"});
   }));
 
   actions.appendChild(makeButton("🗑️ Delete","red",()=>{
-   if(confirm("Delete this task?")){
-    if(activeAlarm===t)dismissAlarm();
-    tasks.splice(i,1);
-    saveTasks();
-    renderTasks();
+   if(!confirm("Delete this task?"))return;
+
+   alarmQueue=alarmQueue.filter(x=>x!==t);
+
+   if(activeAlarm===t){
+    stopAlarmSound();
+    activeAlarm=null;
+    el("alarmPopup").style.display="none";
    }
+
+   tasks.splice(i,1);
+   saveTasks();
+   renderTasks();
+   showNextAlarm();
   }));
 
   item.append(name,info,actions);
@@ -332,89 +417,116 @@ function renderTasks(){
  });
 }
 
-function cancelEdit(){
- editingIndex=null;
- document.getElementById("taskForm").reset();
- document.getElementById("taskDate").value=localDate();
- document.getElementById("priority").value="Medium";
- document.getElementById("enableAlarm").checked=true;
- document.getElementById("formTitle").textContent="➕ Add New Task";
- document.getElementById("saveButton").textContent="Save Task";
- document.getElementById("cancelButton").style.display="none";
+function makeButton(label,cls,fn){
+ const b=document.createElement("button");
+ b.textContent=label;
+ b.className=cls;
+ b.type="button";
+ b.addEventListener("click",fn);
+ return b;
 }
 
-function playAlarmSound(){
- try{
-  const AudioCtx=window.AudioContext||window.webkitAudioContext;
-  if(!AudioCtx)return;
-  if(!audioContext)audioContext=new AudioCtx();
-  audioContext.resume();
+el("taskForm").addEventListener("submit",e=>{
+ e.preventDefault();
 
-  const now=audioContext.currentTime;
+ const name=el("taskName").value.trim();
+ const date=el("taskDate").value;
+ const time=el("taskTime").value;
 
-  for(let i=0;i<3;i++){
-   const osc=audioContext.createOscillator();
-   const gain=audioContext.createGain();
-   osc.type="sine";
-   osc.frequency.value=850;
-   gain.gain.value=0.12;
-   osc.connect(gain);
-   gain.connect(audioContext.destination);
-   osc.start(now+i*0.45);
-   osc.stop(now+i*0.45+0.25);
+ if(!name||!date||!time)return;
+
+ const old=editingIndex===null?null:tasks[editingIndex];
+
+ const task={
+  ...(old||{}),
+  text:name,
+  date,
+  time,
+  priority:el("priority").value,
+  alarm:el("enableAlarm").checked,
+  done:old?!!old.done:false,
+  notified:false,
+  snoozeUntil:null
+ };
+
+ if(old){
+  alarmQueue=alarmQueue.filter(x=>x!==old);
+
+  if(activeAlarm===old){
+   stopAlarmSound();
+   activeAlarm=null;
+   el("alarmPopup").style.display="none";
   }
- }catch(e){}
+
+  tasks[editingIndex]=task;
+ }else{
+  tasks.push(task);
+ }
+
+ saveTasks();
+ cancelEdit();
+ renderTasks();
+ checkAlarms();
+});
+
+function cancelEdit(){
+ editingIndex=null;
+ el("taskForm").reset();
+ el("taskDate").value=todayDate();
+ el("priority").value="Medium";
+ el("enableAlarm").checked=true;
+ el("formTitle").textContent="➕ Add New Task";
+ el("saveButton").textContent="Save Task";
+ el("cancelButton").style.display="none";
 }
 
 function checkAlarms(){
  const now=Date.now();
 
  for(const t of tasks){
-  if(!t.alarm||t.done||!t.date||!t.time)continue;
+  if(!t.alarm||t.done||t.notified||!t.date||!t.time)continue;
 
   const due=new Date(t.date+"T"+t.time).getTime();
   const target=t.snoozeUntil||due;
 
   if(!Number.isFinite(target))continue;
 
-  // Do not trigger old missed alarms from previous days.
+  // Ignore old missed alarms after one minute.
   if(!t.snoozeUntil && now-due>60000)continue;
 
-  if(now>=target && !t.notified && !alarmQueue.includes(t)
-     && activeAlarm!==t){
+  if(now>=target && !alarmQueue.includes(t) && activeAlarm!==t){
    alarmQueue.push(t);
   }
  }
 
- if(!activeAlarm && alarmQueue.length){
-  showNextAlarm();
- }
+ showNextAlarm();
 }
 
 function showNextAlarm(){
- if(activeAlarm||!alarmQueue.length)return;
+ if(activeAlarm)return;
 
- activeAlarm=alarmQueue.shift();
+ while(alarmQueue.length){
+  const next=alarmQueue.shift();
 
- if(!tasks.includes(activeAlarm)||
- activeAlarm.done||!activeAlarm.alarm){
-  activeAlarm=null;
-  showNextAlarm();
+  if(!tasks.includes(next)||next.done||!next.alarm||next.notified){
+   continue;
+  }
+
+  activeAlarm=next;
+
+  el("alarmTaskName").textContent=next.text||"Task Reminder";
+  el("alarmTime").textContent=
+   (next.date||"")+" • "+(next.time||"");
+
+  el("alarmPopup").style.display="flex";
+  startAlarmSound();
   return;
  }
-
- document.getElementById("alarmTaskName").textContent=
- activeAlarm.text||"Task Reminder";
-
- document.getElementById("alarmTime").textContent=
- (activeAlarm.date||"")+" • "+(activeAlarm.time||"");
-
- document.getElementById("alarmPopup").style.display="flex";
- playAlarmSound();
 }
 
 function closeAlarm(){
- document.getElementById("alarmPopup").style.display="none";
+ stopAlarmSound();
+ el("alarmPopup").style.display="none";
  activeAlarm=null;
  saveTasks();
  renderTasks();
@@ -423,6 +535,7 @@ function closeAlarm(){
 
 function snoozeAlarm(){
  if(!activeAlarm)return;
+
  activeAlarm.snoozeUntil=Date.now()+5*60*1000;
  activeAlarm.notified=false;
  closeAlarm();
@@ -430,6 +543,7 @@ function snoozeAlarm(){
 
 function dismissAlarm(){
  if(!activeAlarm)return;
+
  activeAlarm.notified=true;
  activeAlarm.snoozeUntil=null;
  closeAlarm();
@@ -445,43 +559,49 @@ function updateLanguage(){
  const mr=language==="mr";
  document.documentElement.lang=language;
 
- const translations={
+ const words={
   pageTitle:["My Tasks","माझी कामे"],
   langButton:["मराठी","English"],
   helpTitle:["📖 How to Use","📖 कसे वापरावे"],
   helpText:[
-   "Enter task name, select date and time, choose priority, enable alarm and save.",
-   "कामाचे नाव, तारीख, वेळ आणि प्राधान्य निवडा. Alarm सुरू करून Save करा."
+   "Add your task, choose date and time, enable alarm and save.",
+   "कामाचे नाव, तारीख आणि वेळ निवडा. अलार्म सुरू करून सेव्ह करा."
   ],
+  soundButton:["🔊 Enable Alarm Sound","🔊 अलार्मचा आवाज सुरू करा"],
   nameLabel:["Task Name","कामाचे नाव"],
   dateLabel:["Date","तारीख"],
   timeLabel:["Time","वेळ"],
   priorityLabel:["Priority","प्राधान्य"],
   alarmLabel:["Enable Alarm 🔔","अलार्म सुरू करा 🔔"],
-  alarmHelp:[
-   "Alarm works while this page is open.",
-   "हे Page उघडे असताना Alarm काम करेल."
-  ],
   listTitle:["📋 My Task List","📋 माझ्या कामांची यादी"],
   alarmHeading:["TASK ALARM!","कामाचा अलार्म!"],
   snoozeButton:["Snooze 5 Minutes","5 मिनिटांनी पुन्हा"],
-  dismissButton:["Dismiss","बंद करा"]
+  dismissButton:["Dismiss Alarm","अलार्म बंद करा"]
  };
 
- for(const id in translations){
-  document.getElementById(id).textContent=
-   translations[id][mr?1:0];
+ for(const id in words){
+  el(id).textContent=words[id][mr?1:0];
+ }
+
+ if(editingIndex===null){
+  el("formTitle").textContent=mr?"➕ नवीन काम":"➕ Add New Task";
+  el("saveButton").textContent=mr?"काम सेव्ह करा":"Save Task";
  }
 
  renderTasks();
 }
 
-loadTasks();
-updateLanguage();
+if(loadTasks()){
+ el("taskDate").value=todayDate();
+ updateLanguage();
 
-// Check every second while this page is running.
-setInterval(checkAlarms,1000);
-checkAlarms();
+ setInterval(checkAlarms,1000);
+ checkAlarms();
+
+ document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden)checkAlarms();
+ });
+}
 </script>
 
 </body>
