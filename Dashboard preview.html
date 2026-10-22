@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Student Planner</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f7f5ff;
+  color: #29243d;
+}
+
+header {
+  background: linear-gradient(120deg, #7450db, #a46bea);
+  color: white;
+  padding: 30px 18px;
+  text-align: center;
+  border-radius: 0 0 25px 25px;
+}
+
+header h1 { margin: 0 0 10px; }
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+h2 { font-size: 21px; }
+
+.overview, .features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 15px;
+}
+
+.card {
+  padding: 20px 12px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 4px 12px #0000000d;
+}
+
+.card h3 { font-size: 16px; }
+
+.card .emoji { font-size: 34px; }
+
+.card p { font-size: 14px; }
+
+.overview .card {
+  background: white;
+  border: 1px solid #e7e1fa;
+}
+
+.number {
+  font-size: 27px;
+  font-weight: bold;
+  color: #7450db;
+}
+
+.features .card {
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+.features .card:hover {
+  transform: translateY(-4px);
+}
+
+.pink { background: #ffe0eb; }
+.blue { background: #dcecff; }
+.green { background: #ddf7e8; }
+.yellow { background: #fff0c7; }
+.purple { background: #e9dfff; }
+.orange { background: #ffe5d1; }
+.cyan { background: #d9f6fa; }
+.rose { background: #ffdfdf; }
+.mint { background: #d8f5ed; }
+.lavender { background: #e6e5ff; }
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 11px 17px;
+  background: #7450db;
+  color: white;
+  cursor: pointer;
+}
+
+.notice {
+  background: white;
+  padding: 17px;
+  border-radius: 15px;
+  margin-top: 20px;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🎓 Smart Student Planner</h1>
+  <p>Plan • Study • Achieve</p>
+  <p>Your All-in-One College Productivity App</p>
+</header>
+
+<main class="container">
+
+<h2>📊 Today Overview</h2>
+
+<div class="overview">
+  <div class="card">
+    <div class="number" id="todayTasks">0</div>
+    <p>Today's Tasks</p>
+  </div>
+
+  <div class="card">
+    <div class="number" id="pendingAssignments">0</div>
+    <p>Pending Assignments</p>
+  </div>
+
+  <div class="card">
+    <div class="number" id="attendance">--</div>
+    <p>Attendance</p>
+  </div>
+
+  <div class="card">
+    <div class="number" id="nextExam">--</div>
+    <p>Next Exam</p>
+  </div>
+</div>
+
+<h2>✨ My Features</h2>
+
+<div class="features">
+
+  <div class="card pink">
+    <div class="emoji">✅</div>
+    <h3>My Tasks</h3>
+    <p>Manage daily tasks</p>
+  </div>
+
+  <div class="card blue">
+    <div class="emoji">📅</div>
+    <h3>Daily Timetable</h3>
+    <p>Plan your lectures</p>
+  </div>
+
+  <div class="card yellow">
+    <div class="emoji">📝</div>
+    <h3>My Notes</h3>
+    <p>Save study notes</p>
+  </div>
+
+  <div class="card green">
+    <div class="emoji">📚</div>
+    <h3>Study Planner</h3>
+    <p>Organize study time</p>
+  </div>
+
+  <div class="card orange">
+    <div class="emoji">📋</div>
+    <h3>Assignment Tracker</h3>
+    <p>Track deadlines</p>
+  </div>
+
+  <div class="card cyan">
+    <div class="emoji">🏫</div>
+    <h3>Attendance Tracker</h3>
+    <p>Monitor attendance</p>
+  </div>
+
+  <div class="card rose">
+    <div class="emoji">⏳</div>
+    <h3>Exam Countdown</h3>
+    <p>Track upcoming exams</p>
+  </div>
+
+  <div class="card purple">
+    <div class="emoji">⏱️</div>
+    <h3>Focus Timer</h3>
+    <p>Focus on studying</p>
+  </div>
+
+  <div class="card mint">
+    <div class="emoji">📈</div>
+    <h3>Weekly Progress</h3>
+    <p>View your progress</p>
+  </div>
+
+  <div class="card lavender">
+    <div class="emoji">💾</div>
+    <h3>Backup & Restore</h3>
+    <p>Protect your data</p>
+  </div>
+
+</div>
+
+<div class="notice">
+  <h3>🔔 Upcoming Alerts</h3>
+  <p>Upcoming reminders will appear here.</p>
+</div>
+
+</main>
+
+<footer>
+  Smart Student Planner | Made for Students
+</footer>
+
+</body>
+</html>
